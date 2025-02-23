@@ -1,7 +1,7 @@
 # Dai 开源网页ai
-## by.D工作室&duck
-## 特别鸣谢 eyun(eca)[1]
+### by.[D工作室&duck]
+### 特别鸣谢 [eyun(eca)]
 
 
-[1]:http://eyun.xyz
-
+[eyun(eca)]:https://eyun.xyz
+[D工作室&duck]:https://www.dduck.fun
