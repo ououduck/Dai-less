@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dai</title>
+  <link rel="stylesheet" href="a.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    .island {
+      position: absolute;
+      top: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 50px;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 0 15px rgba(178, 171, 249, 0.8), 0 0 25px rgba(178, 171, 249, 0.6);
+      height: 40px;
+      width: 65%;
+    }
+
+    .island-img {
+      width: 20px;
+      height: 20px;
+      margin-right: 5px;
+      object-fit: cover;
+    }
+
+    .island-text {
+      margin-right: 10px;
+    }
+
+    .island-lines {
+      display: flex;
+      align-items: center;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .island-line {
+      width: 3px;
+      height: 15px;
+      margin: 0 2px;
+      background-color: #97cbff;
+      animation: floatLines 0.8s ease-in-out infinite alternate;
+      position: relative;
+      top: 0;
+    }
+
+    .island-line:nth-of-type(2) {
+      background-color: #bbffff;
+      animation-delay: 0.2s;
+    }
+
+    .island-line:nth-of-type(3) {
+      background-color: #adfedc;
+      animation-delay: 0.4s;
+    }
+
+    @keyframes floatLines {
+      from {
+        height: 15px;
+      }
+
+      to {
+        height: 25px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+    <div class="overlay">
+        <div class="verify-container">
+            <button id="verify-button" style="background-color: #8C9AFF; color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer;">点击初始化</button>
+        </div>
+    </div>
+    <div class="island">
+        <img class="island-img" src="ai.svg" alt="灵动岛图片">
+        <span class="island-text">AI生成，不代表官方立场</span>
+        <div class="island-lines">
+            <div class="island-line"></div>
+            <div class="island-line"></div>
+            <div class="island-line"></div>
+        </div>
+    </div>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            Dai-接入多家大模型
+            <div class="model-select-container">
+                <select id="model-select">
+                    <option value="deepseek/deepseek-r1:free">DeepSeek-R1</option>
+                    <option value="deepseek/deepseek-chat:free">DeepSeek-V3</option>
+                    <option value="deepseek/deepseek-r1-distill-llama-70b:free">DeepSeek-70B</option>
+                    <option value="qwen/qwen2.5-vl-72b-instruct:free">Qwen2.5-vl-72B</option>
+                    <option value="qwen/qwen-vl-plus:free">Qwen2.5-vl-Plus</option>
+                    
+ 
+                </select>
+            </div>
+            均为离线模型<br>
+            发送后请耐心等待
+        </div>
+        <div class="chat-body"></div>
+        <form class="chat-input">
+            <input type="text" id="message" placeholder="输入您的消息...">
+            <button type="submit"><i class="fas fa-paper-plane"></i></button>
+            <div class="clear-button">
+                <button>清除</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="loading-indicator">
+        <i class="fas fa-spinner fa-spin"></i>
+    </div>
+
+    <script>
+      $(document).ready(function () {
+        $('.chat-container').hide();
+        $('.overlay').show();
+        $('#verify-button').on('click', function () {
+          $('.overlay').hide();
+          $('.verify-container').hide();
+          $('.chat-container').show();
+        });
+
+        const chatHistoryKey = 'chatHistory';
+        const chatHistory = JSON.parse(localStorage.getItem(chatHistoryKey)) || [];
+        const userLimitsKey = 'userLimits';
+        const userLimits = JSON.parse(localStorage.getItem(userLimitsKey)) || { count: 0, lastTime: 0 };
+
+        loadChatHistory(chatHistory);
+        const welcomeMessage = `<div class="chat-message bot"><div class="bot-info"><img class="bot-avatar" src="ai.svg" alt="AI头像"><span class="bot-name">Dai</span></div><div class="message-content">欢迎来到Dai<br><font color="#00080ff">by.D工作室&duck<br>感谢eca提供技术支持</div></div>`;
+        $('.chat-body').append(welcomeMessage);
+
+        $('form').on('submit', function (e) {
+          e.preventDefault();
+          const messageInput = $('#message');
+          const message = messageInput.val();
+          if (!message) {
+            alert('清空？');
+            return;
+          }
+          const userMessage = `<div class="chat-message user"><div class="message-content">${escapeHtml(message)}</div></div>`;
+          $('.chat-body').append(userMessage);
+          $('.loading-indicator').show();
+
+          const selectedModel = $('#model-select').val(); // 获取用户选择的模型
+
+          $.ajax({
+            url: 'a.php',
+            type: 'POST',
+            data: { message: message, model: selectedModel }, // 传递模型名称
+            success: function (response) {
+              const botMessageElement = $(`<div class="chat-message bot"><div class="bot-info"><img class="bot-avatar" src="ai.svg" alt="AI头像"><span class="bot-name">Dai</span></div><div class="message-content">${escapeHtml(response)}</div></div>`);
+              $('.chat-body').append(botMessageElement);
+              chatHistory.push(userMessage, botMessageElement[0].outerHTML);
+              localStorage.setItem(chatHistoryKey, JSON.stringify(chatHistory));
+              updateUserLimits();
+              typeWriterEffect(botMessageElement.find('.message-content'));
+            },
+            error: function () {
+              const errorMessage = `<div class="chat-message bot"><div class="message-content">处理请求时发生错误。</div></div>`;
+              $('.chat-body').append(errorMessage);
+            },
+            complete: function () {
+              $('.loading-indicator').hide();
+              $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight);
+            }
+          });
+
+          messageInput.val('');
+        });
+
+        function updateUserLimits() {
+          const now = Date.now();
+          if (now - userLimits.lastTime > 60000) {
+            userLimits.count = 0;
+          }
+          userLimits.count++;
+          userLimits.lastTime = now;
+          localStorage.setItem(userLimitsKey, JSON.stringify(userLimits));
+        }
+
+        function escapeHtml(unsafe) {
+          return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+        }
+
+        function loadChatHistory(history) {
+          history.forEach(message => {
+            $('.chat-body').append(message);
+          });
+          $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight);
+        }
+
+        function typeWriterEffect(element) {
+          const text = element.text();
+          element.text('');
+          let i = 0;
+          const interval = setInterval(() => {
+            if (i < text.length) {
+              element.append(text.charAt(i));
+              i++;
+            } else {
+              clearInterval(interval);
+            }
+          }, 100);
+        }
+
+        $('.clear-button button').on('click', function () {
+          $('.chat-body').empty();
+          localStorage.removeItem(chatHistoryKey);
+          localStorage.removeItem(userLimitsKey);
+          const welcomeMessage = `<div class="chat-message bot"><div class="bot-info"><img class="bot-avatar" src="ai.svg" alt="AI头像"><span class="bot-name">Dai</span></div><div class="message-content">您好！欢迎使用Dai<br><font color="#00080ff">by.D工作室&duck<br>感谢eca提供技术支持</div></div>`;
+          $('.chat-body').append(welcomeMessage);
+          $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight);
+        });
+
+        // 确保页面加载完成后初始化聊天历史
+        $(window).on('load', function() {
+          loadChatHistory(chatHistory);
+          $('.chat-body').scrollTop(('.chat-body')[0].scrollHeight); });
+              // 聊天窗口滚动到底部
+    function scrollToBottom() {
+      $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight);
+    }
+
+    // 页面加载完毕后自动滚动到底部
+    $(window).on('load', scrollToBottom);
+
+    // 表单提交后滚动到底部
+    $('form').on('submit', function(e) {
+      e.preventDefault();
+      scrollToBottom();
+    });
+
+    // 清除按钮点击后滚动到底部
+    $('.clear-button button').on('click', function () {
+      scrollToBottom();
+    });
+  });
+</script>
+</html>
