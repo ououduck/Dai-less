@@ -94,7 +94,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 500px; /* 设置最大高度 */
+    max-height: 350px; /* 设置最大高度 */
     margin: 0 auto;
     width: 100%;
     max-width: 400px;

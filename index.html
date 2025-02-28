@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="a.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     .island {
       position: absolute;
@@ -71,30 +72,106 @@
         height: 25px;
       }
     }
+
+    /* 按钮css */
+    .message-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .action-button {
+      background: rgba(140, 154, 255, 0.2);
+      border: none;
+      border-radius: 12px;
+      padding: 4px 8px;
+      cursor: pointer;
+      color: #8C9AFF;
+      font-size: 12px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .action-button:hover {
+      background: rgba(140, 154, 255, 0.3);
+    }
+
+    .action-button i {
+      font-size: 12px;
+    }
+
+    /* Markdown渲染 好像效果不大 */
+    .message-content pre {
+      background: rgba(0,0,0,0.1);
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+
+    .message-content code {
+      font-family: monospace;
+      background: rgba(0,0,0,0.1);
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+
+    .message-content blockquote {
+      border-left: 3px solid #8C9AFF;
+      padding-left: 8px;
+      margin: 8px 0;
+      color: #666;
+    }
+
+    /* 重写弹窗 */
+    .rewrite-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255,255,255,0.9);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+      width: 80%;
+      max-width: 400px;
+    }
+
+    .rewrite-textarea {
+      width: 100%;
+      height: 100px;
+      margin: 10px 0;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #8C9AFF;
+    }
   </style>
 </head>
 
 <body>
-    <div class="overlay">
-        <div class="verify-container">
-            <button id="verify-button" style="background-color: #8C9AFF; color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer;">点击初始化</button>
-        </div>
+  <div class="overlay">
+    <div class="verify-container">
+      <button id="verify-button" style="background-color: #8C9AFF; color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer;">点击初始化</button>
     </div>
-    <div class="island">
-        <img class="island-img" src="ai.svg" alt="灵动岛图片">
-        <span class="island-text">AI生成，不代表官方立场</span>
-        <div class="island-lines">
-            <div class="island-line"></div>
-            <div class="island-line"></div>
-            <div class="island-line"></div>
-        </div>
+  </div>
+  <div class="island">
+    <img class="island-img" src="ai.svg" alt="灵动岛图片">
+    <span class="island-text">AI生成，不代表官方立场</span>
+    <div class="island-lines">
+      <div class="island-line"></div>
+      <div class="island-line"></div>
+      <div class="island-line"></div>
     </div>
+  </div>
 
-    <div class="chat-container">
-        <div class="chat-header">
-            Dai-接入多家大模型
-            <div class="model-select-container">
-                <select id="model-select">
+  <div class="chat-container">
+    <div class="chat-header">
+      Dai-接入多家大模型
+      <div class="model-select-container">
+        <select id="model-select">
                     <option value="api接口的模型名称">用户选择是显示的名称</option>
 <!--                 <option value="deepseek/deepseek-chat">DeepSeek-V3</option>
                     <option value="deepseek/deepseek-r1-distill-llama-70b">DeepSeek-70B</option>
@@ -102,155 +179,255 @@
                     <option value="qwen/qwen-vl-plus">Qwen2.5-vl-Plus</option>
                     这些是示例
                                                                                                             -->
- 
-                </select>
-            </div>
-            均为离线模型<br>
-            发送后请耐心等待
-        </div>
-        <div class="chat-body"></div>
-        <form class="chat-input">
-            <input type="text" id="message" placeholder="输入您的消息...">
-            <button type="submit"><i class="fas fa-paper-plane"></i></button>
-            <div class="clear-button">
-                <button>清除</button>
-            </div>
-        </form>
+        </select>
+      </div>
+      <a href="https://www.dduck.fun/posts/help-for-dai.html">使用文档</a><br>
+      <a href="https://github.com/ououduck/Dai">Github已开源</a>
     </div>
+    <div class="chat-body"></div>
+    <form class="chat-input">
+      <input type="text" id="message" placeholder="输入您的消息...">
+      <button type="submit"><i class="fas fa-paper-plane"></i></button>
+      <div class="clear-button">
+        <button type="button">清除</button>
+      </div>
+    </form>
+  </div>
 
-    <div class="loading-indicator">
-        <i class="fas fa-spinner fa-spin"></i>
-    </div>
+  <div class="loading-indicator">
+    <i class="fas fa-spinner fa-spin"></i>
+  </div>
 
-    <script>
-      $(document).ready(function () {
-        $('.chat-container').hide();
-        $('.overlay').show();
-        $('#verify-button').on('click', function () {
-          $('.overlay').hide();
-          $('.verify-container').hide();
-          $('.chat-container').show();
+  <script>
+    $(document).ready(function () {
+      $('.chat-container').hide();
+      $('.overlay').show();
+      
+      // 初始化按钮点击事件
+      $('#verify-button').on('click', function () {
+        $('.overlay').hide(); // 直接隐藏父容器(修复了部分浏览器点击初始化异常)
+        $('.chat-container').show();
+      });
+
+      const chatHistoryKey = 'chatHistory';
+      const chatHistory = JSON.parse(localStorage.getItem(chatHistoryKey)) || [];
+      const userLimitsKey = 'userLimits';
+      const userLimits = JSON.parse(localStorage.getItem(userLimitsKey)) || { count: 0, lastTime: 0 };
+
+      let chatContext = []; // 上下文对话数组
+      let originalMessages = {}; // 存储原始消息内容
+
+      loadChatHistory(chatHistory);
+      const welcomeMessage = `<div class="chat-message bot"><div class="bot-info"><img class="bot-avatar" src="ai.svg" alt="AI头像"><span class="bot-name">Dai</span></div><div class="message-content">您好！我是Dai，请随时提问</div></div>`;
+      $('.chat-body').append(welcomeMessage);
+
+      // 表单提交事件
+      $('form').on('submit', function (e) {
+        e.preventDefault();
+        const messageInput = $('#message');
+        const message = messageInput.val().trim();
+
+        if (!message) {
+          alert('请输入消息');
+          return;
+        }
+
+        // 存储原始消息
+        const messageId = Date.now();
+        originalMessages[messageId] = message;
+
+        const userMessage = createUserMessage(message, messageId);
+        $('.chat-body').append(userMessage);
+        processMessage(message, messageId);
+        messageInput.val('');
+      });
+
+      function createUserMessage(message, messageId) {
+        return $(`
+          <div class="chat-message user">
+            <div class="message-content">${escapeHtml(message)}</div>
+            <div class="message-actions">
+              <button class="action-button rewrite-btn" data-id="${messageId}">
+                <i class="fas fa-edit"></i> 重写
+              </button>
+            </div>
+          </div>
+        `);
+      }
+
+      function createBotMessage(response) {
+        const htmlContent = marked.parse(response);
+        return $(`
+          <div class="chat-message bot">
+            <div class="bot-info">
+              <img class="bot-avatar" src="ai.svg" alt="AI头像">
+              <span class="bot-name">Dai</span>
+            </div>
+            <div class="message-content">${htmlContent}</div>
+            <div class="message-actions">
+              <button class="action-button regenerate-btn">
+                <i class="fas fa-redo"></i> 重新生成
+              </button>
+              <button class="action-button copy-btn">
+                <i class="far fa-copy"></i> 复制
+              </button>
+            </div>
+          </div>
+        `);
+      }
+
+      // 新增事件委托处理按钮点击
+      $('.chat-body').on('click', '.regenerate-btn', function() {
+        const message = $(this).closest('.chat-message').prev('.user').find('.message-content').text();
+        processMessage(message);
+      });
+
+      $('.chat-body').on('click', '.copy-btn', function() {
+        const content = $(this).closest('.chat-message').find('.message-content').text();
+        navigator.clipboard.writeText(content);
+      });
+
+      $('.chat-body').on('click', '.rewrite-btn', function() {
+        const messageId = $(this).data('id');
+        const original = originalMessages[messageId];
+        
+        const modal = $(`
+          <div class="rewrite-modal">
+            <h4>编辑消息</h4>
+            <textarea class="rewrite-textarea">${original}</textarea>
+            <div style="text-align: right;">
+              <button class="action-button cancel-btn">取消</button>
+              <button class="action-button confirm-btn">发送</button>
+            </div>
+          </div>
+        `);
+        
+        modal.find('.cancel-btn').click(() => modal.remove());
+        modal.find('.confirm-btn').click(() => {
+          const newMessage = modal.find('textarea').val().trim();
+          if(newMessage) {
+            originalMessages[messageId] = newMessage;
+            $(this).closest('.chat-message').find('.message-content').text(newMessage);
+            processMessage(newMessage, messageId);
+            modal.remove();
+          }
         });
+        
+        $('body').append(modal);
+      });
 
-        const chatHistoryKey = 'chatHistory';
-        const chatHistory = JSON.parse(localStorage.getItem(chatHistoryKey)) || [];
-        const userLimitsKey = 'userLimits';
-        const userLimits = JSON.parse(localStorage.getItem(userLimitsKey)) || { count: 0, lastTime: 0 };
+      // 修改 processMessage 函数
+      function processMessage(message, messageId) {
+        $('.loading-indicator').show();
+        
+        const formData = new FormData();
+        formData.append('message', message);
+        formData.append('model', $('#model-select').val());
+        formData.append('context', JSON.stringify(chatContext));
 
-        loadChatHistory(chatHistory);
-        const welcomeMessage = `<div class="chat-message bot"><div class="bot-info"><img class="bot-avatar" src="ai.svg" alt="AI头像"><span class="bot-name">Dai</span></div><div class="message-content">欢迎来到Dai<br><font color="#00080ff">by.D工作室&duck<br>感谢eca提供技术支持</div></div>`;
+        $.ajax({
+          url: 'a.php',
+          type: 'POST',
+          data: formData,
+          contentType: false,
+          processData: false,
+          success: function (response) {
+            const botMessage = createBotMessage(response);
+            $('.chat-body').append(botMessage);
+            
+            // 更新上下文
+            chatContext.push({ role: "user", content: message });
+            chatContext.push({ role: "assistant", content: response });
+            
+            if (chatContext.length > 20) chatContext = chatContext.slice(-20);
+            
+            // 存储聊天记录
+            chatHistory.push({
+              type: 'user',
+              content: message,
+              id: messageId
+            }, {
+              type: 'bot',
+              content: response
+            });
+            localStorage.setItem(chatHistoryKey, JSON.stringify(chatHistory));
+            
+            typeWriterEffect(botMessage.find('.message-content'));
+          },
+          error: function () {
+            const errorMessage = `<div class="chat-message bot"><div class="message-content">处理请求时发生错误</div></div>`;
+            $('.chat-body').append(errorMessage);
+          },
+          complete: function () {
+            $('.loading-indicator').hide();
+            $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight);
+          }
+        });
+      }
+
+      // 辅助函数
+      function updateUserLimits() {
+        const now = Date.now();
+        if (now - userLimits.lastTime > 60000) {
+          userLimits.count = 0;
+        }
+        userLimits.count++;
+        userLimits.lastTime = now;
+        localStorage.setItem(userLimitsKey, JSON.stringify(userLimits));
+      }
+
+      function escapeHtml(unsafe) {
+        return unsafe
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function loadChatHistory(history) {
+        history.forEach(entry => {
+          if(entry.type === 'user') {
+            $('.chat-body').append(createUserMessage(entry.content, entry.id));
+            originalMessages[entry.id] = entry.content;
+          } else {
+            $('.chat-body').append(createBotMessage(entry.content));
+          }
+        });
+        $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight);
+      }
+
+      function typeWriterEffect(element) {
+        const text = element.text();
+        element.text('');
+        let i = 0;
+        const interval = setInterval(() => {
+          if (i < text.length) {
+            element.append(text.charAt(i));
+            i++;
+          } else {
+            clearInterval(interval);
+          }
+        }, 100);
+      }
+
+      // 清除按钮事件
+      $('.clear-button button').on('click', function () {
+        $('.chat-body').empty();
+        localStorage.removeItem(chatHistoryKey);
+        localStorage.removeItem(userLimitsKey);
+        chatContext = []; // 清空上下文
+        const welcomeMessage = `<div class="chat-message bot"><div class="bot-info"><img class="bot-avatar" src="ai.svg" alt="AI头像"><span class="bot-name">Dai</span></div><div class="message-content">您好！我是Dai，请随时提问</div></div>`;
         $('.chat-body').append(welcomeMessage);
+        $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight);
+      });
 
-        $('form').on('submit', function (e) {
-          e.preventDefault();
-          const messageInput = $('#message');
-          const message = messageInput.val();
-          if (!message) {
-            alert('清空？');
-            return;
-          }
-          const userMessage = `<div class="chat-message user"><div class="message-content">${escapeHtml(message)}</div></div>`;
-          $('.chat-body').append(userMessage);
-          $('.loading-indicator').show();
-
-          const selectedModel = $('#model-select').val(); // 获取用户选择的模型
-
-          $.ajax({
-            url: 'a.php',
-            type: 'POST',
-            data: { message: message, model: selectedModel }, // 传递模型名称
-            success: function (response) {
-              const botMessageElement = $(`<div class="chat-message bot"><div class="bot-info"><img class="bot-avatar" src="ai.svg" alt="AI头像"><span class="bot-name">Dai</span></div><div class="message-content">${escapeHtml(response)}</div></div>`);
-              $('.chat-body').append(botMessageElement);
-              chatHistory.push(userMessage, botMessageElement[0].outerHTML);
-              localStorage.setItem(chatHistoryKey, JSON.stringify(chatHistory));
-              updateUserLimits();
-              typeWriterEffect(botMessageElement.find('.message-content'));
-            },
-            error: function () {
-              const errorMessage = `<div class="chat-message bot"><div class="message-content">处理请求时发生错误。</div></div>`;
-              $('.chat-body').append(errorMessage);
-            },
-            complete: function () {
-              $('.loading-indicator').hide();
-              $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight);
-            }
-          });
-
-          messageInput.val('');
-        });
-
-        function updateUserLimits() {
-          const now = Date.now();
-          if (now - userLimits.lastTime > 60000) {
-            userLimits.count = 0;
-          }
-          userLimits.count++;
-          userLimits.lastTime = now;
-          localStorage.setItem(userLimitsKey, JSON.stringify(userLimits));
-        }
-
-        function escapeHtml(unsafe) {
-          return unsafe
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-        }
-
-        function loadChatHistory(history) {
-          history.forEach(message => {
-            $('.chat-body').append(message);
-          });
-          $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight);
-        }
-
-        function typeWriterEffect(element) {
-          const text = element.text();
-          element.text('');
-          let i = 0;
-          const interval = setInterval(() => {
-            if (i < text.length) {
-              element.append(text.charAt(i));
-              i++;
-            } else {
-              clearInterval(interval);
-            }
-          }, 100);
-        }
-
-        $('.clear-button button').on('click', function () {
-          $('.chat-body').empty();
-          localStorage.removeItem(chatHistoryKey);
-          localStorage.removeItem(userLimitsKey);
-          const welcomeMessage = `<div class="chat-message bot"><div class="bot-info"><img class="bot-avatar" src="ai.svg" alt="AI头像"><span class="bot-name">Dai</span></div><div class="message-content">您好！欢迎使用Dai<br><font color="#00080ff">by.D工作室&duck<br>感谢eca提供技术支持</div></div>`;
-          $('.chat-body').append(welcomeMessage);
-          $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight);
-        });
-
-        // 确保页面加载完成后初始化聊天历史
-        $(window).on('load', function() {
-          loadChatHistory(chatHistory);
-          $('.chat-body').scrollTop(('.chat-body')[0].scrollHeight); });
-              // 聊天窗口滚动到底部
-    function scrollToBottom() {
-      $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight);
-    }
-
-    // 页面加载完毕后自动滚动到底部
-    $(window).on('load', scrollToBottom);
-
-    // 表单提交后滚动到底部
-    $('form').on('submit', function(e) {
-      e.preventDefault();
-      scrollToBottom();
+      // 页面加载后自动滚动到底部
+      $(window).on('load', function() {
+        loadChatHistory(chatHistory);
+        $('.chat-body').scrollTop($('.chat-body')[0].scrollHeight);
+      });
     });
-
-    // 清除按钮点击后滚动到底部
-    $('.clear-button button').on('click', function () {
-      scrollToBottom();
-    });
-  });
-</script>
+  </script>
+</body>
 </html>
