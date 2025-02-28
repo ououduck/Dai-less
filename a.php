@@ -3,7 +3,7 @@
 $keywordReplies = array(
     "你是" => "我是由D工作室开发的网页ai--Dai！",
     "你好" => "我不好！",
-    "版本" => "Dai-v2.3",
+    "版本" => "Dai-v2.5",
     "乐子" => "不好意思，D工作室现在不招人 不需要你在这里自我介绍",        
     "dduck.fun" => "dduck.fun是D工作室的主域名 D工作室的官网是 www.dduck.fun 你他妈又想干嘛！",    
     "D工作室" => " D工作室？看看官网 www.dduck.fun",        
