@@ -3,7 +3,7 @@
 $keywordReplies = array(
     "你是" => "我是由D工作室开发的网页ai--Dai！",
     "你好" => "我不好！",
-    "版本" => "Dai-v2.1.1",
+    "版本" => "Dai-v2.3",
     "乐子" => "不好意思，D工作室现在不招人 不需要你在这里自我介绍",        
     "dduck.fun" => "dduck.fun是D工作室的主域名 D工作室的官网是 www.dduck.fun 你他妈又想干嘛！",    
     "D工作室" => " D工作室？看看官网 www.dduck.fun",        
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['message']) && isset($_
     );
 
     // 调用 API
-    $url = 'api接口地址';
+    $url = 'https://openrouter.ai/api/v1/chat/completions';
     $data = array(
         "model" => $model,
         "messages" => $messages,
@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['message']) && isset($_
     );
     $headers = array(
         'Content-Type: application/json',
-        'Authorization: Bearer api密钥'
+        'Authorization: Bearer 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'
     );
 
     $ch = curl_init();

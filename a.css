@@ -4,7 +4,7 @@
 
 body {
     font-family: 'Noto Sans SC', Arial, sans-serif;
-    background-image: url('bj.jpg');
+    background-image: url('https://www.dmoe.cc/random.php');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -233,4 +233,20 @@ body {
         transform: translateY(0);
         opacity: 1;
     }
+}
+.footer {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    color: #FFFFFF;
+    font-size: 14px;
+}
+.footer a {
+    color: #8C9AFF;
+    text-decoration: none;
+    margin: 0 5px;
+}
+.footer a:hover {
+    text-decoration: underline;
 }
