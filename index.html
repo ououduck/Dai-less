@@ -5,181 +5,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dai</title>
-  <link rel="stylesheet" href="a.css">
+  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <style>
-    .island {
-      position: absolute;
-      top: 50px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: rgba(255, 255, 255, 0.8);
-      border-radius: 50px;
-      padding: 10px 20px;
-      display: flex;
-      align-items: center;
-      box-shadow: 0 0 15px rgba(178, 171, 249, 0.8), 0 0 25px rgba(178, 171, 249, 0.6);
-      height: 40px;
-      width: 65%;
-    }
-
-    .island-img {
-      width: 20px;
-      height: 20px;
-      margin-right: 5px;
-      object-fit: cover;
-    }
-
-    .island-text {
-      margin-right: 10px;
-    }
-
-    .island-lines {
-      display: flex;
-      align-items: center;
-      position: relative;
-      flex-shrink: 0;
-    }
-
-    .island-line {
-      width: 3px;
-      height: 15px;
-      margin: 0 2px;
-      background-color: #97cbff;
-      animation: floatLines 0.8s ease-in-out infinite alternate;
-      position: relative;
-      top: 0;
-    }
-
-    .island-line:nth-of-type(2) {
-      background-color: #bbffff;
-      animation-delay: 0.2s;
-    }
-
-    .island-line:nth-of-type(3) {
-      background-color: #adfedc;
-      animation-delay: 0.4s;
-    }
-
-    @keyframes floatLines {
-      from {
-        height: 15px;
-      }
-
-      to {
-        height: 25px;
-      }
-    }
-
-    @-webkit-keyframes floatLines {
-      from {
-        height: 15px;
-      }
-
-      to {
-        height: 25px;
-      }
-    }
-
-    .message-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .action-button {
-      background: rgba(140, 154, 255, 0.2);
-      border: none;
-      border-radius: 12px;
-      padding: 4px 8px;
-      cursor: pointer;
-      color: #8C9AFF;
-      font-size: 12px;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .action-button:hover {
-      background: rgba(140, 154, 255, 0.3);
-    }
-
-    .action-button i {
-      font-size: 12px;
-    }
-
-    .message-content pre {
-      background: rgba(0,0,0,0.1);
-      padding: 12px;
-      border-radius: 8px;
-      overflow-x: auto;
-    }
-
-    .message-content code {
-      font-family: monospace;
-      background: rgba(0,0,0,0.1);
-      padding: 2px 4px;
-      border-radius: 4px;
-    }
-
-    .message-content blockquote {
-      border-left: 3px solid #8C9AFF;
-      padding-left: 8px;
-      margin: 8px 0;
-      color: #666;
-    }
-
-    .rewrite-modal {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(255,255,255,0.9);
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
-      z-index: 1000;
-      backdrop-filter: blur(5px);
-      width: 80%;
-      max-width: 400px;
-    }
-
-    .rewrite-textarea {
-      width: 100%;
-      height: 100px;
-      margin: 10px 0;
-      padding: 8px;
-      border-radius: 8px;
-      border: 1px solid #8C9AFF;
-    }
-
-    .rewrite-modal {
-      background: rgba(255, 255, 255, 0.95);
-      border: 1px solid rgba(178, 171, 249, 0.3);
-      box-shadow: 0 0 30px rgba(178, 171, 249, 0.2);
-    }
-
-    .rewrite-modal h4 {
-      color: #8C9AFF;
-      margin: 0 0 15px 0;
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-    }
-
-    .message-status {
-      font-size: 12px;
-      color: #8C9AFF;
-      margin-top: 4px;
-      display: none;
-    }
-  </style>
 </head>
 
 <body>
@@ -203,8 +32,18 @@
       Dai-接入多家大模型
       <div class="model-select-container">
         <select id="model-select">
-          <option value="api接口模型名称">页面显示的模型名称</option>
-<!-- 示例 <option value="deepseek/deepseek-chat">DeepSeek-V3</option>-->
+          <option value="deepseek/deepseek-r1:free">DeepSeek-R1</option>
+          <option value="deepseek/deepseek-chat:free">DeepSeek-V3</option>
+          <option value="deepseek/deepseek-r1-distill-llama-70b:free">DeepSeek-70B</option>
+          <option value="qwen/qwen2.5-vl-72b-instruct:free">Qwen2.5-vl-72B</option>
+          <option value="qwen/qwen-vl-plus:free">Qwen2.5-vl-Plus</option>
+          <option value="qwen/qwen-2-7b-instruct:free">Qwen 2 7B Instruct</option>
+          <option value="openchat/openchat-7b:free">openchat3.5-7B</option>
+          <option value="google/gemini-2.0-flash-thinking-exp:free">Gemini 2.0 Flash Thinking Experimental</option>
+          <option value="google/gemini-2.0-pro-exp-02-05:free">Gemini Pro 2.0 Experimentall</option>
+          <option value="microsoft/phi-3-mini-128k-instruct:free">Phi-3 Mini 128K Instruct</option>
+          <option value="moonshotai/moonlight-16b-a3b-instruct:free">Moonlight 16b A3b Instruct</option>
+          
         </select>
       </div>
     </div>
@@ -315,7 +154,7 @@
         formData.append('context', JSON.stringify(chatContext));
 
         $.ajax({
-          url: 'a.php',
+          url: 'api.php',
           type: 'POST',
           data: formData,
           contentType: false,
