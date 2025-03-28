@@ -1,0 +1,7 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- 黑色圆形背景 -->
+  <circle cx="100" cy="100" r="100" fill="#000000" />
+
+  <!-- 白色字母D -->
+  <text x="100" y="105" font-family="Arial" font-size="120" text-anchor="middle" fill="#FFFFFF" dy=".35em">D</text>
+</svg>
