@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['message']) && isset($_
     );
 
     // 调用 API
-    $url = 'https://openrouter.ai/api/v1/chat/completions';
+    $url = 'api接口地址';
     $data = array(
         "model" => $model,
         "messages" => $messages,
@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['message']) && isset($_
     );
     $headers = array(
         'Content-Type: application/json',
-        'Authorization: Bearer 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'
+        'Authorization: Bearer api密钥'
     );
 
     $ch = curl_init();
