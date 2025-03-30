@@ -27,9 +27,8 @@
       Dai-接入多家大模型
       <div class="model-select-container">
         <select id="model-select">
-<!--模型添加示例          <option value="deepseek/deepseek-r1">DeepSeek-R1</option>
-          <option value="deepseek/deepseek-chat">DeepSeek-V3</option>   -->
-          <option value="api的模型ID名称">界面显示的名称</option>
+          <option value="ollama/qwq:latest">QWQ-本地</option>
+          <option value="ollama/deepseek-r1:32b">DeepSeek-R1-32B-本地</option>
         </select>
       </div>
     </div>
@@ -99,14 +98,31 @@
       }
 
       function createBotMessage(response, messageId) {
-        const htmlContent = marked.parse(response);
-        return $(`
+        // 提取思考过程
+        let finalResponse = response;
+        let thinkContent = '';
+        
+        const thinkMatch = response.match(/<think>([\s\S]*?)<\/think>/);
+        if (thinkMatch) {
+          thinkContent = thinkMatch[1].trim();
+          finalResponse = response.replace(/<think>[\s\S]*?<\/think>/, '').trim();
+        }
+        
+        const htmlContent = marked.parse(finalResponse);
+        const messageElement = $(`
           <div class="chat-message bot" data-original="${escapeHtml(response)}" data-id="${messageId}">
             <div class="bot-info">
               <img class="bot-avatar" src="ai.svg" alt="AI头像">
               <span class="bot-name">Dai</span>
             </div>
-            <div class="message-content">${escapeHtml(response)}</div>
+            <div class="message-content">${finalResponse}</div>
+            ${thinkContent ? `
+              <div class="think-toggle">
+                <i class="fas fa-chevron-down"></i>
+                显示思考过程
+              </div>
+              <div class="think-content">${marked.parse(thinkContent)}</div>
+            ` : ''}
             <div class="message-actions" style="display:none;">
               <button class="action-button regenerate-btn">
                 <i class="fas fa-redo"></i> 重新生成
@@ -121,6 +137,20 @@
             <div class="message-status"><i class="fas fa-check"></i> 已完成</div>
           </div>
         `);
+
+        // 绑定思考过程切换事件
+        messageElement.find('.think-toggle').on('click', function() {
+          const $this = $(this);
+          const $thinkContent = $this.next('.think-content');
+          $thinkContent.slideToggle(200);
+          $this.toggleClass('active');
+          $this.html($this.hasClass('active') ? 
+            '<i class="fas fa-chevron-up"></i>隐藏思考过程' : 
+            '<i class="fas fa-chevron-down"></i>显示思考过程'
+          );
+        });
+
+        return messageElement;
       }
 
       function processMessage(message, messageId, replaceId = null) {
