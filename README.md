@@ -65,4 +65,3 @@ Dai 使用 [MIT 许可证](LICENSE) 开源。
 © 2025 D 工作室 & Duck
 
 更多信息请访问 [使用文档](https://www.dduck.fun/posts/help-for-dai.html) 或 [GitHub 仓库](https://github.com/ououduck/Dai)。
-```
