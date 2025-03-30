@@ -43,14 +43,7 @@ Dai 是一个用于网页的 AI 聊天应用，支持多种 AI 模型的接入�
 
 2. **配置模型选择**：
 
-   如果需要添加更多模型，请编辑 `index.php` 文件中的模型选择部分，按以下格式添加模型选项：
-
-   ```html
-   <select id="model-select">
-     <option value="model-identifier">模型名称</option>
-   </select>
-   ```
-
+   如果需要添加更多模型，请编辑 `index.php` 文件中的模型选择部分，按例子添加模型
 ## 文件结构
 
 ```
