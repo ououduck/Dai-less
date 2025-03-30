@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['message']) && isset($_
 
     // 调用Ollama API
     $actualModel = substr($model, 7); // 移除 "ollama/" 前缀
-    $url = 'http://101.200.63.120:11434/api/chat';
+    $url = '你的ollama地址/api/chat';
     $data = array(
         "model" => $actualModel,
         "messages" => $messages,
