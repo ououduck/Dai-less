@@ -27,9 +27,20 @@
       Dai-接入多家大模型
       <div class="model-select-container">
         <select id="model-select">
-<!--模型添加示例          <option value="deepseek/deepseek-r1">DeepSeek-R1</option>
-          <option value="deepseek/deepseek-chat">DeepSeek-V3</option>   -->
-          <option value="api的模型ID名称">界面显示的名称</option>
+          <option value="deepseek/deepseek-r1:free">DeepSeek-R1</option>
+          <option value="deepseek/deepseek-chat:free">DeepSeek-V3</option>
+          <option value="deepseek/deepseek-r1-distill-llama-70b:free">DeepSeek-70B</option>
+          <option value="qwen/qwen2.5-vl-72b-instruct:free">Qwen2.5-vl-72B</option>
+          <option value="qwen/qwen-vl-plus:free">Qwen2.5-vl-Plus</option>
+          <option value="qwen/qwen-2-7b-instruct:free">Qwen2-7B</option>
+          <option value="qwen/qwq-32b:free">Qwen-QwQ-32B</option>
+          <option value="qwen/qwen-2.5-coder-32b-instruct:free">Qwen2.5-Coder-32B</option>          
+          <option value="openchat/openchat-7b:free">openchat3.5-7B</option>
+          <option value="google/gemini-2.0-flash-thinking-exp:free">Gemini 2.0 Flash Thinking Experimental</option>
+          <option value="google/gemini-2.0-pro-exp-02-05:free">Gemini Pro 2.0 Experimentall</option>
+          <option value="microsoft/phi-3-mini-128k-instruct:free">Phi-3 Mini 128K Instruct</option>
+          <option value="moonshotai/moonlight-16b-a3b-instruct:free">Moonlight 16b A3b Instruct</option>
+          
         </select>
       </div>
     </div>
@@ -99,14 +110,13 @@
       }
 
       function createBotMessage(response, messageId) {
-        const htmlContent = marked.parse(response);
         return $(`
           <div class="chat-message bot" data-original="${escapeHtml(response)}" data-id="${messageId}">
             <div class="bot-info">
               <img class="bot-avatar" src="ai.svg" alt="AI头像">
               <span class="bot-name">Dai</span>
             </div>
-            <div class="message-content">${escapeHtml(response)}</div>
+            <div class="message-content">${response}</div>
             <div class="message-actions" style="display:none;">
               <button class="action-button regenerate-btn">
                 <i class="fas fa-redo"></i> 重新生成
@@ -257,6 +267,20 @@
             modal.fadeOut(200, () => modal.remove());
           }
         });
+      });
+
+      $('.chat-body').on('click', '.think-toggle', function() {
+        const targetId = $(this).data('target');
+        const thinkContent = $(`#${targetId}`);
+        
+        $(this).toggleClass('active');
+        if($(this).hasClass('active')) {
+          $(this).text('隐藏思考过程');
+          thinkContent.slideDown();
+        } else {
+          $(this).text('显示思考过程');
+          thinkContent.slideUp();
+        }
       });
 
       function escapeHtml(unsafe) {

@@ -3,7 +3,7 @@
 $keywordReplies = array(
     "你是" => "我是由D工作室开发的网页ai--Dai！",
     "你好" => "我不好！",
-    "版本" => "Dai-v3",
+    "版本" => "Dai-v3.5",
     "乐子" => "不好意思，D工作室现在不招人 不需要你在这里自我介绍",        
     "D工作室" => " D工作室？看看官网 www.dduck.fun",        
     "D工作室" => " D工作室？看看官网 www.dduck.fun",    
@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['message']) && isset($_
     );
 
     // 调用 API
-    $url = 'api接口';
+    $url = 'https://openrouter.ai/api/v1/chat/completions';
     $data = array(
         "model" => $model,
         "messages" => $messages,
@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['message']) && isset($_
     );
     $headers = array(
         'Content-Type: application/json',
-        'Authorization: Bearer api密钥'
+        'Authorization: Bearer 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'
     );
 
     $ch = curl_init();
@@ -98,8 +98,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['message']) && isset($_
     if ($curlErrno === 0) {
         if ($response) {
             $responseData = json_decode($response, true);
-            if (isset($responseData['choices'][0]['message']['content'])) {
-                echo $responseData['choices'][0]['message']['content'];
+            if (isset($responseData['message']['content'])) {
+                $content = $responseData['message']['content'];
+                
+                // 处理思考过程标签
+                $pattern = '/<think>(.*?)<\/think>/s';
+                preg_match_all($pattern, $content, $matches);
+                
+                if (!empty($matches[1])) {
+                    foreach($matches[1] as $index => $think) {
+                        $id = uniqid('think_');
+                        $replacement = "<div class='think-toggle' data-target='$id'>显示思考过程</div><div id='$id' class='think-content'>$think</div>";
+                        $content = str_replace($matches[0][$index], $replacement, $content);
+                    }
+                }
+                
+                echo $content;
             } else {
                 echo "Dai未响应，数据格式不符";
             }
