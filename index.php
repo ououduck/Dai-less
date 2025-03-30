@@ -27,20 +27,10 @@
       Dai-接入多家大模型
       <div class="model-select-container">
         <select id="model-select">
-          <option value="deepseek/deepseek-r1:free">DeepSeek-R1</option>
+<!--模型添加示例          <option value="deepseek/deepseek-r1:free">DeepSeek-R1</option>
           <option value="deepseek/deepseek-chat:free">DeepSeek-V3</option>
           <option value="deepseek/deepseek-r1-distill-llama-70b:free">DeepSeek-70B</option>
-          <option value="qwen/qwen2.5-vl-72b-instruct:free">Qwen2.5-vl-72B</option>
-          <option value="qwen/qwen-vl-plus:free">Qwen2.5-vl-Plus</option>
-          <option value="qwen/qwen-2-7b-instruct:free">Qwen2-7B</option>
-          <option value="qwen/qwq-32b:free">Qwen-QwQ-32B</option>
-          <option value="qwen/qwen-2.5-coder-32b-instruct:free">Qwen2.5-Coder-32B</option>          
-          <option value="openchat/openchat-7b:free">openchat3.5-7B</option>
-          <option value="google/gemini-2.0-flash-thinking-exp:free">Gemini 2.0 Flash Thinking Experimental</option>
-          <option value="google/gemini-2.0-pro-exp-02-05:free">Gemini Pro 2.0 Experimentall</option>
-          <option value="microsoft/phi-3-mini-128k-instruct:free">Phi-3 Mini 128K Instruct</option>
-          <option value="moonshotai/moonlight-16b-a3b-instruct:free">Moonlight 16b A3b Instruct</option>
-          
+-->
         </select>
       </div>
     </div>
