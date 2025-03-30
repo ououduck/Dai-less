@@ -464,3 +464,37 @@ body {
     .search-button.active:hover {
       background-color: #7a85e6;
     }
+
+    /* 思考过程样式 */
+    .think-content {
+        background: rgba(140, 154, 255, 0.1);
+        border-left: 3px solid #8C9AFF;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 0 8px 8px 0;
+        font-size: 14px;
+        color: #666;
+        display: none;
+    }
+
+    .think-toggle {
+        color: #8C9AFF;
+        cursor: pointer;
+        font-size: 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 8px;
+    }
+
+    .think-toggle:hover {
+        text-decoration: underline;
+    }
+
+    .think-toggle i {
+        transition: transform 0.3s ease;
+    }
+
+    .think-toggle.active i {
+        transform: rotate(180deg);
+    }
