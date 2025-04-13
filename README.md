@@ -1,7 +1,11 @@
+此项目现已停更 原因是代码过于混乱 此版本今后为低配版
+对此我们基于此项目但重构框架推出新项目
+新版本链接[Dai](https://github.com/ououduck/Dai) 
+
 
 # Dai
 
-[Dai](https://github.com/ououduck/Dai) 是由 D 工作室开发的一个网页 AI 项目，旨在通过接入多个大模型来提供智能对话功能。
+[Dai-less](https://github.com/ououduck/Dai-less) 是由 D 工作室开发的一个网页 AI 项目，旨在通过接入多个大模型来提供智能对话功能。
 
 ## 目录
 
@@ -64,4 +68,3 @@ Dai 使用 [MIT 许可证](LICENSE) 开源。
 
 © 2025 D 工作室 & Duck
 
-更多信息请访问 [使用文档](https://www.dduck.fun/posts/help-for-dai.html) 或 [GitHub 仓库](https://github.com/ououduck/Dai)。
